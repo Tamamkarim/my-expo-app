@@ -1,9 +1,10 @@
 import React from 'react';
 import {ActivityIndicator, FlatList, SafeAreaView, StyleSheet, View} from 'react-native';
+import type {NavigationProp, ParamListBase} from '@react-navigation/native';
 import MediaListItem from '../components/MediaListItem';
 import {useMedia} from '../hooks/apiHooks';
 
-const Home = () => {
+const Home = ({navigation}: {navigation: NavigationProp<ParamListBase>}) => {
   const {mediaArray} = useMedia();
 
   return (
@@ -16,7 +17,9 @@ const Home = () => {
         <FlatList
           data={mediaArray}
           keyExtractor={(item) => String(item.media_id ?? item.user_id)}
-          renderItem={({item}) => <MediaListItem item={item} />}
+          renderItem={({item}) => (
+            <MediaListItem navigation={navigation} item={item} />
+          )}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
         />
       )}

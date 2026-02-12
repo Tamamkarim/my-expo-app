@@ -1,17 +1,23 @@
 import React from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import type {NavigationProp, ParamListBase} from '@react-navigation/native';
 import type {MediaItemWithOwner} from '../types/DBTypes';
+import AsyncImage from './AsyncImage';
 
 interface Props {
   item: MediaItemWithOwner;
+  navigation: NavigationProp<ParamListBase>;
 }
 
-const MediaListItem = ({item}: Props) => {
+const MediaListItem = ({item, navigation}: Props) => {
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() => navigation.navigate('Single', {item})}
+    >
       <View style={styles.content}>
         {item.thumbnail ? (
-          <Image source={{uri: item.thumbnail}} style={styles.image} />
+          <AsyncImage source={{uri: item.thumbnail}} style={styles.image} />
         ) : null}
         <View style={styles.textContainer}>
           <Text style={styles.title}>{item.title}</Text>
