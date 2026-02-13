@@ -1,6 +1,7 @@
 import React, {createContext, useContext, useState, useCallback} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {fetchData} from '../utils/fetch-data';
+import type {AuthUser} from '../types/DBTypes';
 
 export interface Credentials {
   username: string;
@@ -13,8 +14,10 @@ export interface RegisterInputs extends Credentials {
 }
 
 export interface UserContextState {
-  user: unknown | null;
+  user: AuthUser | null;
   token: string | null;
+  loading: boolean;
+  error: string | null;
   handleLogin: (credentials: Credentials) => Promise<void>;
   handleLogout: () => Promise<void>;
   handleAutoLogin: () => Promise<void>;
@@ -29,11 +32,15 @@ interface Props {
 }
 
 export const UserProvider = ({children}: Props) => {
-  const [user, setUser] = useState<unknown | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleLogin = useCallback(async (credentials: Credentials) => {
     try {
+      setLoading(true);
+      setError(null);
       const loginResult = await fetchData<{token: string}>(
         `${process.env.EXPO_PUBLIC_AUTH_API as string}/login`,
         {
@@ -49,7 +56,7 @@ export const UserProvider = ({children}: Props) => {
       setToken(newToken);
       await AsyncStorage.setItem(TOKEN_KEY, newToken);
 
-      const me = await fetchData<unknown>(
+      const me = await fetchData<AuthUser>(
         `${process.env.EXPO_PUBLIC_AUTH_API as string}/users/user`,
         {
           headers: {
@@ -60,6 +67,9 @@ export const UserProvider = ({children}: Props) => {
       setUser(me);
     } catch (error) {
       console.error('Login failed', error);
+      setError('Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -67,6 +77,7 @@ export const UserProvider = ({children}: Props) => {
     try {
       setUser(null);
       setToken(null);
+      setError(null);
       await AsyncStorage.removeItem(TOKEN_KEY);
     } catch (error) {
       console.error('Logout failed', error);
@@ -75,10 +86,11 @@ export const UserProvider = ({children}: Props) => {
 
   const handleAutoLogin = useCallback(async () => {
     try {
+      setLoading(true);
       const storedToken = await AsyncStorage.getItem(TOKEN_KEY);
       if (!storedToken) return;
 
-      const me = await fetchData<unknown>(
+      const me = await fetchData<AuthUser>(
         `${process.env.EXPO_PUBLIC_AUTH_API as string}/users/user`,
         {
           headers: {
@@ -90,12 +102,14 @@ export const UserProvider = ({children}: Props) => {
       setUser(me);
     } catch (error) {
       console.error('Auto login failed', error);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
   return (
     <UserContext.Provider
-      value={{user, token, handleLogin, handleLogout, handleAutoLogin}}
+      value={{user, token, loading, error, handleLogin, handleLogout, handleAutoLogin}}
     >
       {children}
     </UserContext.Provider>

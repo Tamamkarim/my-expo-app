@@ -1,15 +1,27 @@
 import React from 'react';
 import {Card, Text, Button} from '@rneui/themed';
 import {useUserContext} from '../hooks/ContextHooks';
+import type {AuthUser} from '../types/DBTypes';
 
 const Profile = () => {
-  const {handleLogout} = useUserContext();
+  const {user, handleLogout} = useUserContext();
+  const authUser = user as AuthUser | null;
 
   return (
     <Card>
       <Card.Title>Profile</Card.Title>
       <Card.Divider />
-      <Text>Profile view</Text>
+      {authUser ? (
+        <>
+          <Text style={{marginBottom: 4}}>Username: {authUser.username}</Text>
+          {authUser.email ? (
+            <Text style={{marginBottom: 4}}>Email: {authUser.email}</Text>
+          ) : null}
+          <Text>Id: {authUser.user_id}</Text>
+        </>
+      ) : (
+        <Text>No user data available.</Text>
+      )}
       <Button
         title="Logout"
         onPress={handleLogout}

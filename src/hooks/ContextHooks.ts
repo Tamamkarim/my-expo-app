@@ -1,10 +1,11 @@
 import {useContext} from 'react';
-import {UserContext, UserContextState} from '../contexts/UserContext';
+import {UpdateContext, type UpdateContextType} from '../contexts/UpdateContext';
+export {useUserContext} from '../contexts/UserContext';
 
-export const useUserContext = (): UserContextState => {
-  const ctx = useContext(UserContext as React.Context<UserContextState | undefined>);
+export const useUpdateContext = (): UpdateContextType => {
+  const ctx = useContext(UpdateContext);
   if (!ctx) {
-    throw new Error('useUserContext must be used within UserProvider');
+    throw new Error('useUpdateContext must be used within an UpdateProvider');
   }
   return ctx;
 };

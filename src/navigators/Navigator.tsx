@@ -6,6 +6,8 @@ import Home from '../views/Home';
 import Profile from '../views/Profile';
 import Single from '../views/Single';
 import Login from '../views/Login';
+import Upload from '../views/Upload';
+import Modify from '../views/Modify';
 import {useUserContext} from '../hooks/ContextHooks';
 
 const Tab = createBottomTabNavigator();
@@ -16,6 +18,7 @@ const TabScreen = () => {
     <Tab.Navigator>
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Profile" component={Profile} />
+      <Tab.Screen name="Upload" component={Upload} />
     </Tab.Navigator>
   );
 };
@@ -43,6 +46,7 @@ const StackScreen = () => {
         options={{headerShown: false}}
       />
       <Stack.Screen name="Single" component={Single} />
+      <Stack.Screen name="Modify" component={Modify} />
     </Stack.Navigator>
   );
 };

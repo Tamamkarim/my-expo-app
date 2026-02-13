@@ -1,11 +1,11 @@
 import React from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {Button, Card, Input} from '@rneui/themed';
+import {Button, Card, Input, Text} from '@rneui/themed';
 import type {Credentials} from '../contexts/UserContext';
 import {useUserContext} from '../hooks/ContextHooks';
 
 const LoginForm = () => {
-  const {handleLogin} = useUserContext();
+  const {handleLogin, loading, error} = useUserContext();
   const initValues: Credentials = {username: '', password: ''};
   const {
     control,
@@ -59,7 +59,15 @@ const LoginForm = () => {
         )}
         name="password"
       />
-      <Button title="Login" onPress={handleSubmit(doLogin)} />
+      <Button
+        title="Login"
+        onPress={handleSubmit(doLogin)}
+        loading={loading}
+        disabled={loading}
+      />
+      {error ? (
+        <Text style={{color: 'red', marginTop: 8}}>{error}</Text>
+      ) : null}
     </Card>
   );
 };

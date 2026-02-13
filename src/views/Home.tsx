@@ -4,13 +4,19 @@ import {Card} from '@rneui/themed';
 import type {NavigationProp, ParamListBase} from '@react-navigation/native';
 import MediaListItem from '../components/MediaListItem';
 import {useMedia} from '../hooks/apiHooks';
+import {useUpdateContext} from '../hooks/ContextHooks';
 
 const Home = ({navigation}: {navigation: NavigationProp<ParamListBase>}) => {
-  const {mediaArray} = useMedia();
+  const {mediaArray, loading} = useMedia();
+  const {triggerUpdate} = useUpdateContext();
+
+  const onRefresh = () => {
+    triggerUpdate();
+  };
 
   return (
     <Card>
-      {mediaArray.length === 0 ? (
+      {loading && mediaArray.length === 0 ? (
         <View>
           <ActivityIndicator size="large" />
         </View>
@@ -22,6 +28,8 @@ const Home = ({navigation}: {navigation: NavigationProp<ParamListBase>}) => {
             <MediaListItem navigation={navigation} item={item} />
           )}
           ItemSeparatorComponent={() => <View />}
+          onRefresh={onRefresh}
+          refreshing={loading}
         />
       )}
     </Card>
