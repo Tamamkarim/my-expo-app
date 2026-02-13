@@ -5,6 +5,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from '../views/Home';
 import Profile from '../views/Profile';
 import Single from '../views/Single';
+import Login from '../views/Login';
+import {useUserContext} from '../hooks/ContextHooks';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -19,6 +21,20 @@ const TabScreen = () => {
 };
 
 const StackScreen = () => {
+  const {user} = useUserContext();
+
+  if (!user) {
+    return (
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{headerShown: false}}
+        />
+      </Stack.Navigator>
+    );
+  }
+
   return (
     <Stack.Navigator>
       <Stack.Screen

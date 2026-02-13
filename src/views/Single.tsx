@@ -1,5 +1,6 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
+import {Card, Text} from '@rneui/themed';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import type {MediaItemWithOwner} from '../types/DBTypes';
 import AsyncImage from '../components/AsyncImage';
@@ -16,24 +17,22 @@ const Single = () => {
   const {item} = route.params;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <Card containerStyle={styles.container}>
       {item.thumbnail ? (
         <AsyncImage source={{uri: item.thumbnail}} style={styles.image} />
       ) : null}
       <View style={styles.textContainer}>
-        <Text style={styles.title}>{item.title}</Text>
+        <Card.Title>{item.title}</Card.Title>
+        <Card.Divider />
         <Text style={styles.author}>By {item.username}</Text>
       </View>
-    </SafeAreaView>
+    </Card>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
+    paddingVertical: 16,
   },
   image: {
     width: 300,

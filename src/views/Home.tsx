@@ -1,5 +1,6 @@
 import React from 'react';
-import {ActivityIndicator, FlatList, SafeAreaView, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, FlatList, View} from 'react-native';
+import {Card} from '@rneui/themed';
 import type {NavigationProp, ParamListBase} from '@react-navigation/native';
 import MediaListItem from '../components/MediaListItem';
 import {useMedia} from '../hooks/apiHooks';
@@ -8,9 +9,9 @@ const Home = ({navigation}: {navigation: NavigationProp<ParamListBase>}) => {
   const {mediaArray} = useMedia();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <Card>
       {mediaArray.length === 0 ? (
-        <View style={styles.loaderContainer}>
+        <View>
           <ActivityIndicator size="large" />
         </View>
       ) : (
@@ -20,26 +21,11 @@ const Home = ({navigation}: {navigation: NavigationProp<ParamListBase>}) => {
           renderItem={({item}) => (
             <MediaListItem navigation={navigation} item={item} />
           )}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ItemSeparatorComponent={() => <View />}
         />
       )}
-    </SafeAreaView>
+    </Card>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  loaderContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#eee',
-  },
-});
 
 export default Home;

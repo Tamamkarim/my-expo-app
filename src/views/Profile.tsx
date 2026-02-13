@@ -1,24 +1,22 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet, Text} from 'react-native';
+import {Card, Text, Button} from '@rneui/themed';
+import {useUserContext} from '../hooks/ContextHooks';
 
 const Profile = () => {
+  const {handleLogout} = useUserContext();
+
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.text}>Profile view</Text>
-    </SafeAreaView>
+    <Card>
+      <Card.Title>Profile</Card.Title>
+      <Card.Divider />
+      <Text>Profile view</Text>
+      <Button
+        title="Logout"
+        onPress={handleLogout}
+        containerStyle={{marginTop: 16}}
+      />
+    </Card>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    fontSize: 20,
-    fontWeight: '600',
-  },
-});
 
 export default Profile;
