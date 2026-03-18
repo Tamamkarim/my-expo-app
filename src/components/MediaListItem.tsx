@@ -20,6 +20,12 @@ const MediaListItem = ({item, navigation}: Props) => {
       <ListItem.Content>
         <ListItem.Title>{item.title}</ListItem.Title>
         <ListItem.Subtitle>{item.username}</ListItem.Subtitle>
+        {/* عرض الوسوم إذا كانت متوفرة */}
+        {Array.isArray(item.tags) && item.tags.length > 0 && (
+          <ListItem.Subtitle>
+            الوسوم: {item.tags.join(', ')}
+          </ListItem.Subtitle>
+        )}
       </ListItem.Content>
       <ListItem.Chevron />
     </ListItem>

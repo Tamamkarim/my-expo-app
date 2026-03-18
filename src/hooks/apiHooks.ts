@@ -5,6 +5,7 @@ import type {
 } from '../types/DBTypes';
 import {useEffect, useState} from 'react';
 import {fetchData} from '../utils/fetch-data';
+import Constants from 'expo-constants';
 import {useUpdateContext} from './ContextHooks';
 
 interface MediaUpdatePayload {
@@ -21,14 +22,16 @@ const useMedia = () => {
     const getMedia = async () => {
       try {
         setLoading(true);
+        const mediaApi = Constants.expoConfig?.extra?.EXPO_PUBLIC_MEDIA_API ?? '';
+        const authApi = Constants.expoConfig?.extra?.EXPO_PUBLIC_AUTH_API ?? '';
         const media = await fetchData<MediaItem[]>(
-          `${process.env.EXPO_PUBLIC_MEDIA_API as string}/media`,
+          `${mediaApi}/media`,
         );
         const mediaWithOwners = await Promise.all<MediaItemWithOwner>(
           media.map(async (item: MediaItem) => {
             try {
               const owner = await fetchData<UserWithNoPassword>(
-                `${process.env.EXPO_PUBLIC_AUTH_API as string}/users/${item.user_id}`,
+                `${authApi}/users/${item.user_id}`,
               );
               const mediaItemWithOwner: MediaItemWithOwner = {
                 ...item,

@@ -2,15 +2,17 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {Alert, Image, ScrollView, View} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
-import {Video} from 'expo-av';
+import {Video} from 'expo-video';
 import {Button, Input, Text} from '@rneui/themed';
 import {useForm, Controller} from 'react-hook-form';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useUserContext, useUpdateContext} from '../hooks/ContextHooks';
+import {postMedia} from '../lib/functions';
 
 interface UploadInputs {
   title: string;
   description: string;
+  tags?: string;
 }
 
 type RootStackParamList = {
@@ -37,7 +39,7 @@ const Upload = ({navigation}: Props) => {
     reset,
     formState: {errors, isValid},
   } = useForm<UploadInputs>({
-    defaultValues: {title: '', description: ''},
+    defaultValues: {title: '', description: '', tags: ''},
     mode: 'onChange',
   });
 
@@ -100,7 +102,63 @@ const Upload = ({navigation}: Props) => {
         Alert.alert('Error', 'File upload failed.');
         return;
       }
-      // TODO: call postMedia with uploadResponse and inputs when available
+      const {filename, media_type} = uploadResponse as {
+        filename?: string;
+        media_type?: string;
+      };
+
+      if (!filename || !media_type) {
+        Alert.alert('Error', 'Upload response missing media data.');
+        return;
+      }
+
+
+      // إرسال الوسائط أولاً
+      const created = await postMedia(
+        {
+          title: inputs.title,
+          description: inputs.description,
+          filename,
+          media_type,
+        },
+        token,
+      );
+
+      // إذا تم رفع الوسائط بنجاح وأدخل المستخدم وسوماً، أرسل الوسوم إلى API (يجب لاحقاً إنشاء endpoint مناسب)
+      if (created && inputs.tags && inputs.tags.trim() !== '') {
+        // مثال: إرسال الوسوم كسلسلة نصية مفصولة بفواصل
+        await fetch(
+          `${process.env.EXPO_PUBLIC_MEDIA_API}/media/${created.media_id}/tags`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ tags: inputs.tags.split(',').map((t) => t.trim()) }),
+          }
+        );
+      }
+      {/* حقل إدخال الوسوم */}
+      <Controller
+        control={control}
+        name="tags"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <Input
+            label="Tags"
+            placeholder="مثال: nature, travel, food"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+      />
+
+      if (!created) {
+        Alert.alert('Error', 'Saving media metadata failed.');
+        return;
+      }
+
       triggerUpdate();
       resetForm();
       navigation.navigate('Tabs');
@@ -122,8 +180,11 @@ const Upload = ({navigation}: Props) => {
     asset?.type === 'video' || asset?.mimeType?.startsWith('video/');
 
   return (
-    <ScrollView contentContainerStyle={{padding: 16}}>
-      <Text h3 style={{marginBottom: 16}}>
+    <ScrollView
+      style={{flex: 1, backgroundColor: '#0F172A'}}
+      contentContainerStyle={{padding: 16}}
+    >
+      <Text h3 style={{marginBottom: 16, color: '#F9FAFB'}}>
         Upload Media
       </Text>
 
@@ -203,11 +264,7 @@ const Upload = ({navigation}: Props) => {
         containerStyle={{marginBottom: 8}}
       />
 
-      <Button
-        title="Reset"
-        type="outline"
-        onPress={resetForm}
-      />
+      <Button title="Reset" type="outline" onPress={resetForm} />
     </ScrollView>
   );
 };

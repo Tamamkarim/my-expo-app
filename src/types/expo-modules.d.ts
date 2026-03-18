@@ -1,6 +1,7 @@
 declare module 'expo-image-picker';
 declare module 'expo-file-system';
-declare module 'expo-av';
+declare module 'expo-audio';
+declare module 'expo-video';
 
 
 

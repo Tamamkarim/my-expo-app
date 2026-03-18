@@ -1,14 +1,13 @@
 import React from 'react';
+import {Alert} from 'react-native';
 import {Controller, useForm} from 'react-hook-form';
 import {Button, Card, Input, Text} from '@rneui/themed';
-
-
-interface RegisterInputs {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+import type {RegisterInputs} from '../contexts/UserContext';
+import {
+  checkEmailAvailable,
+  checkUsernameAvailable,
+  postUser,
+} from '../lib/functions';
 
 const RegisterForm = () => {
   const {
@@ -26,9 +25,12 @@ const RegisterForm = () => {
   });
 
   const doRegister = async (inputs: RegisterInputs) => {
-    const {confirmPassword, ...dataToSend} = inputs;
-    // TODO: wire to API: postUser(dataToSend)
-    console.log('Register submit', dataToSend);
+    const success = await postUser(inputs);
+    if (success) {
+      Alert.alert('Success', 'Account created. You can now log in.');
+    } else {
+      Alert.alert('Error', 'Registration failed. Please try again.');
+    }
   };
 
   return (
@@ -41,8 +43,8 @@ const RegisterForm = () => {
         rules={{
           required: {value: true, message: 'is required'},
           validate: async (value) => {
-            // TODO: wire to API: getUsernameAvailable
-            return true;
+            const available = await checkUsernameAvailable(value);
+            return available || 'username is already taken';
           },
         }}
         render={({field: {onChange, onBlur, value}}) => (
@@ -67,8 +69,8 @@ const RegisterForm = () => {
             message: 'not a valid email',
           },
           validate: async (value) => {
-            // TODO: wire to API: getEmailAvailable
-            return true;
+            const available = await checkEmailAvailable(value);
+            return available || 'email is already in use';
           },
         }}
         render={({field: {onChange, onBlur, value}}) => (

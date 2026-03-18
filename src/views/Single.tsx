@@ -8,7 +8,7 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import {Video} from 'expo-av';
+import {Video} from 'expo-video';
 import type {AuthUser, MediaItemWithOwner} from '../types/DBTypes';
 import AsyncImage from '../components/AsyncImage';
 import {useUserContext, useUpdateContext} from '../hooks/ContextHooks';
@@ -59,7 +59,8 @@ const Single = () => {
   };
 
   return (
-    <Card containerStyle={styles.container}>
+    <View style={styles.screen}>
+      <Card containerStyle={styles.card}>
       {mediaUri ? (
         isVideo ? (
           <Video
@@ -100,12 +101,19 @@ const Single = () => {
           </View>
         ) : null}
       </View>
-    </Card>
+      </Card>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
+    flex: 1,
+    backgroundColor: '#0F172A',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  card: {
     paddingVertical: 16,
   },
   media: {

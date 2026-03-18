@@ -65,8 +65,11 @@ const Modify = ({navigation, route}: any) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={{padding: 16}}>
-      <Text h3 style={{marginBottom: 16}}>
+    <ScrollView
+      style={{flex: 1, backgroundColor: '#0F172A'}}
+      contentContainerStyle={{padding: 16}}
+    >
+      <Text h3 style={{marginBottom: 16, color: '#F9FAFB'}}>
         Modify Media
       </Text>
 
